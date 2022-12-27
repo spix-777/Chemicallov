@@ -1,4 +1,4 @@
-# Chemicallov
+# Chemical lov
  Chemical for Norway government list
 
  Chemical: a command-line tool for searching a list of banned chemicals in Norway!
@@ -11,7 +11,7 @@
 
  So next time you're unsure about a chemical, just let Chemical do the searching for you. Happy experimenting!
 
-Usage of lov:
+Usage of Chemical:
   -u	Update list of chemicals
   -w string
     	Chemical for Norway government list (default "nil")
