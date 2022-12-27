@@ -1,11 +1,15 @@
 # Chemicallov
  Chemical for Norway government list
 
- This Go program is a command-line tool that searches a list of banned chemicals for a specific chemical specified by the user. The list of banned chemicals is stored in a file called "tables.txt", which is created by scraping the HTML of a website that lists the banned chemicals. The user can also update the list of banned chemicals by using the "-u" flag when running the program.
+ Chemical: a command-line tool for searching a list of banned chemicals in Norway!
 
-The program begins by parsing command-line flags using the "flag" package. The "-u" flag is used to update the list of chemicals, and the "-w" flag is used to specify the chemical to search for. If the "-u" flag is set, the program calls the "updateChemicalList" function, which downloads the website containing the list of banned chemicals and parses the HTML to extract the tables containing the chemicals. The tables are then written to the "tables.txt" file.
+ Are you worried about using a certain chemical in your lab or workplace? With Chemical, you can quickly find out if it's allowed by the Norwegian government.
 
-If the "-w" flag is set and the "tables.txt" file exists, the program calls the "searchTable" function, which reads the contents of the file and searches for the specified chemical. If either the upper or lower case version of the chemical is found in the file, the program prints a message indicating that the chemical is banned. If the chemical is not found in the file, the program prints a message indicating that it is not banned.
+ Just run lov.go with the "-w" flag followed by the chemical you want to check, and it will search the "tables.txt" file for the chemical's name. If it's found, Chemical will alert you that the chemical is not allowed. If it's not found, you're in the clear!
+
+ But wait, what if the "tables.txt" file doesn't exist or is out of date? No problem! Just use the "-u" flag to update the list of chemicals by scraping the government's website. Chemical will handle all the hard work for you.
+
+ So next time you're unsure about a chemical, just let Chemical do the searching for you. Happy experimenting!
 
 Usage of lov:
   -u	Update list of chemicals
