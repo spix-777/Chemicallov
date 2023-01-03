@@ -16,8 +16,10 @@ func main() {
 	// Parse command-line flags
 	updateFlag := flag.Bool("u", false, "Update list of chemicals")
 	wordFlag := flag.String("w", "nil", "Chemical for Norway government list")
+	fileFlag := flag.String("f", "", "File with chemicals to search for")
 	flag.Parse()
-	fmt.Println("     --- LovData Narkotika Søk 0.13 ---")
+
+	fmt.Println("     --- LovData Narkotika Søk 0.15 ---")
 
 	// If the update flag is set, update the list of chemicals
 	if *updateFlag {
@@ -30,6 +32,29 @@ func main() {
 	if _, err := os.Stat("tables.txt"); err == nil {
 		if *wordFlag != "nil" {
 			searchTable(*wordFlag)
+		} else if *fileFlag != "" {
+			// Open the file specified by the -f flag
+			file, err := os.Open(*fileFlag)
+			if err != nil {
+				fmt.Println(err)
+				os.Exit(1)
+			}
+			defer file.Close()
+
+			// Read the contents of the file
+			contents, err := ioutil.ReadAll(file)
+			if err != nil {
+				fmt.Println(err)
+				os.Exit(1)
+			}
+
+			// Split the contents of the file into lines
+			lines := strings.Split(string(contents), "\n")
+
+			// Search for each line in the "tables.txt" file
+			for _, line := range lines {
+				searchTable(line)
+			}
 		} else {
 			fmt.Println("[ ! ] You have NOT put a Chemicals in -w")
 			os.Exit(1)
@@ -85,6 +110,9 @@ func updateChemicalList() {
 
 func searchTable(word string) {
 	// Convert the input word to two variations: one with the first letter in uppercase and the rest in lowercase, and the other with the first letter in lowercase and the rest in lowercase.
+	if word == "" {
+		os.Exit(0)
+	}
 	lenString := len(word)
 	upperVariation := strings.ToUpper(word[0:1]) + word[1:lenString]
 	lowerVariation := strings.ToLower(word[0:1]) + word[1:lenString]
