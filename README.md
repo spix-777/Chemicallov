@@ -12,6 +12,8 @@
  So next time you're unsure about a chemical, just let Chemical do the searching for you. Happy experimenting!
 
 Usage of Chemical:
+  -f string
+    	File with chemicals to search for
   -u	Update list of chemicals
   -w string
     	Chemical for Norway government list (default "nil")
