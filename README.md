@@ -1,19 +1,50 @@
 # Chemical lov
- Chemical for Norway government list
+Overview
 
- Chemical: a command-line tool for searching a list of banned chemicals in Norway!
+This program is a command-line tool that searches for a given chemical in the Norway government's list of controlled substances. It is written in Go and uses the flag, http, ioutil, os, strings, github.com/PuerkitoBio/goquery, and github.com/TwiN/go-color packages.
 
- Are you worried about using a certain chemical in your lab or workplace? With Chemical, you can quickly find out if it's allowed by the Norwegian government.
+Requirements
 
- Just run lov.go with the "-w" flag followed by the chemical you want to check, and it will search the "tables.txt" file for the chemical's name. If it's found, Chemical will alert you that the chemical is not allowed. If it's not found, you're in the clear!
+The program has the following dependencies:
 
- But wait, what if the "tables.txt" file doesn't exist or is out of date? No problem! Just use the "-u" flag to update the list of chemicals by scraping the government's website. Chemical will handle all the hard work for you.
+flag: for parsing command-line flags
+http: for downloading the website containing the list of chemicals
+ioutil: for reading and writing files
+os: for interacting with the filesystem
+strings: for manipulating strings
+github.com/PuerkitoBio/goquery: for parsing HTML
+github.com/TwiN/go-color: for coloring the output
+Usage
 
- So next time you're unsure about a chemical, just let Chemical do the searching for you. Happy experimenting!
+To use the program, you need to compile it and then run the executable with the appropriate flags.
 
-Usage of Chemical:
-  -f string
-    	File with chemicals to search for
-  -u	Update list of chemicals
-  -w string
-    	Chemical for Norway government list (default "nil")
+Copy code
+go build main.go
+./main -w <chemical>
+The following flags are available:
+
+-u: update the list of chemicals by downloading the latest version from the Norway government website
+-w: search for the given chemical in the list of chemicals
+-f: search for all the chemicals in the given file (one chemical per line)
+Examples
+
+Update the list of chemicals:
+
+Copy code
+./main -u
+Search for a single chemical:
+
+Copy code
+./main -w ketamine
+Search for multiple chemicals from a file:
+
+Copy code
+./main -f chemicals.txt
+Limitations
+
+The program has the following limitations:
+
+It only searches in the Norway government's list of controlled substances.
+It requires an internet connection to update the list of chemicals.
+It uses a hard-coded URL for the website containing the list of chemicals. This URL may change in the future, causing the program to break.
+It relies on the structure and formatting of the website and the HTML tables. If the website or the tables are changed, the program may not work correctly.
