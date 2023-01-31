@@ -1,9 +1,13 @@
+// Author: SpiX-777
+// Date: 2023-01-31
+// Chemical is a tool that search for chemicals on LovData.
+
 package main
 
 import (
 	"flag"
-	"fmt"
 	"io/ioutil"
+	"log"
 	"net/http"
 	"os"
 	"strings"
@@ -12,6 +16,22 @@ import (
 	"github.com/TwiN/go-color"
 )
 
+// Loggers
+var (
+	nullLogger  *log.Logger
+	InfoLogger  *log.Logger
+	ErrorLogger *log.Logger
+	WarnLogger  *log.Logger
+)
+
+// Initialize loggers to stdout
+func init() {
+	nullLogger = log.New(os.Stdout, " ", 0)
+	InfoLogger = log.New(os.Stdout, color.Ize(color.Green, " [ + ] "), 0)
+	ErrorLogger = log.New(os.Stdout, color.Ize(color.Red, " [ - ] "), 0)
+	WarnLogger = log.New(os.Stdout, " [ ! ] ", 0)
+}
+
 func main() {
 	// Parse command-line flags
 	updateFlag := flag.Bool("u", false, "Update list of chemicals")
@@ -19,11 +39,11 @@ func main() {
 	fileFlag := flag.String("f", "", "File with chemicals to search for")
 	flag.Parse()
 
-	fmt.Println("     --- LovData Narkotika Søk 0.15 ---")
+	nullLogger.Println("     --- LovData Narkotika Søk 0.17 ---")
 
 	// If the update flag is set, update the list of chemicals
 	if *updateFlag {
-		fmt.Println(color.Ize(color.Green, "[ + ] Update list of chemicals"))
+		InfoLogger.Println(color.Ize(color.Green, "Update list of chemicals"))
 		updateChemicalList()
 		os.Exit(0)
 	}
@@ -36,16 +56,15 @@ func main() {
 			// Open the file specified by the -f flag
 			file, err := os.Open(*fileFlag)
 			if err != nil {
-				fmt.Println(err)
-				os.Exit(1)
+				WarnLogger.Println(err)
+				os.Exit(0)
 			}
 			defer file.Close()
 
 			// Read the contents of the file
 			contents, err := ioutil.ReadAll(file)
 			if err != nil {
-				fmt.Println(err)
-				os.Exit(1)
+				ErrorLogger.Fatalln(err)
 			}
 
 			// Split the contents of the file into lines
@@ -56,12 +75,11 @@ func main() {
 				searchTable(line)
 			}
 		} else {
-			fmt.Println("[ ! ] You have NOT put a Chemicals in -w")
+			ErrorLogger.Println("You have NOT put a Chemicals in -w")
 			os.Exit(1)
 		}
 	} else {
-		fmt.Println(color.Ize(color.Red, "[ ! ] No list of chemicals"))
-		os.Exit(0)
+		ErrorLogger.Println(color.Ize(color.Red, "No list of chemicals"))
 	}
 }
 
@@ -72,7 +90,7 @@ func updateChemicalList() {
 	// Download the website by making an HTTP GET request to the URL
 	response, err := http.Get(url)
 	if err != nil {
-		fmt.Println(err)
+		ErrorLogger.Fatalln(err)
 		return
 	}
 	defer response.Body.Close()
@@ -80,7 +98,7 @@ func updateChemicalList() {
 	// Read the response body and convert it to a string
 	body, err := ioutil.ReadAll(response.Body)
 	if err != nil {
-		fmt.Println(err)
+		ErrorLogger.Fatalln(err)
 		return
 	}
 	bodyStr := string(body)
@@ -88,14 +106,14 @@ func updateChemicalList() {
 	// Parse the HTML from the response body
 	doc, err := goquery.NewDocumentFromReader(strings.NewReader(bodyStr))
 	if err != nil {
-		fmt.Println(err)
+		ErrorLogger.Fatalln(err)
 		return
 	}
 
 	// Create a new file to store the tables
 	file, err := os.Create("tables.txt")
 	if err != nil {
-		fmt.Println(err)
+		ErrorLogger.Fatalln(err)
 		return
 	}
 	defer file.Close()
@@ -121,16 +139,16 @@ func searchTable(word string) {
 	html, err := ioutil.ReadFile("tables.txt")
 	if err != nil {
 		// If an error occurred while reading the file, print the error and return.
-		fmt.Println(err)
+		ErrorLogger.Fatalln(err)
 		return
 	}
 
 	// Check if either variation of the input word is contained in the file contents.
 	if strings.Contains(string(html), upperVariation) || strings.Contains(string(html), lowerVariation) {
 		// If either variation is found, print a message indicating that the chemical is banned.
-		fmt.Println(color.Ize(color.Red, "[ ! ] "+word+": This chemical does have a ban on it"))
+		ErrorLogger.Println(color.Ize(color.Red, word+": This chemical does have a ban on it"))
 	} else {
 		// If neither variation is found, print a message indicating that the chemical is not banned.
-		fmt.Println(color.Ize(color.Green, "[ + ] "+word+": This chemical does NOT have a ban on it"))
+		InfoLogger.Println(color.Ize(color.Green, word+": This chemical does NOT have a ban on it"))
 	}
 }
